@@ -6,9 +6,10 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Define the username and password
-USER="company"
-PASSWORD="74123"
+# Prompt for the username and password
+read -p "Enter the username to create: " USER
+read -sp "Enter the password for $USER: " PASSWORD
+echo
 
 # Check if the user already exists on the system
 if ! id "$USER" &>/dev/null; then
