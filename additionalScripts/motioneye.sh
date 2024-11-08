@@ -14,6 +14,21 @@ sudo apt update
 
 # Install required packages
 echo "Installing required packages..."
+
+
+sudo apt --no-install-recommends install ca-certificates curl python3 python3-dev libcurl4-openssl-dev gcc libssl-dev
+sudo curl -sSfO 'https://bootstrap.pypa.io/get-pip.py'
+sudo python3 get-pip.py
+sudo grep -q '\[global\]' /etc/pip.conf 2> /dev/null || printf '%b' '[global]\n' | sudo tee -a /etc/pip.conf > /dev/null
+sudo sed -i '/^\[global\]/a\break-system-packages=true' /etc/pip.conf
+sudo python3 -m pip install --pre motioneye
+sudo pip3 install --upgrade tornado
+sudo motioneye_init
+
+
+
+
+
 sudo apt install -y \
     motion \
     python3 \
@@ -35,46 +50,4 @@ sudo apt install -y \
     libpq-dev \
     python3-pyqt5
 
-# Install MotionEye using pip3
-echo "Installing MotionEye..."
-sudo pip3 install motioneye
-
-# Create the MotionEye configuration directory
-echo "Creating MotionEye configuration directory..."
-sudo mkdir -p /etc/motioneye
-
-# Initialize the MotionEye configuration
-echo "Initializing MotionEye configuration..."
-sudo motioneye_init
-
-# Create systemd service file for MotionEye
-echo "Creating systemd service file for MotionEye..."
-cat <<EOF | sudo tee /etc/systemd/system/motioneye.service
-[Unit]
-Description=MotionEye Server
-After=network.target motion.service
-
-[Service]
-ExecStart=/usr/local/bin/motioneye
-WorkingDirectory=/usr/local/lib/python3.*/dist-packages/motioneye/
-User=motioneye
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Enable and start Motion and MotionEye services
-echo "Enabling and starting Motion service..."
-sudo systemctl enable motion
-sudo systemctl start motion
-
-echo "Enabling and starting MotionEye service..."
-sudo systemctl enable motioneye
-sudo systemctl start motioneye
-
-# Stop the MotionEye service after installation
-echo "Stopping MotionEye service..."
-# sudo systemctl stop motioneye
-
-echo "MotionEye installation complete. You can access it via http://<your-ip>:8765 (service is currently stopped)."
+    echo "MotionEye installation complete. You can access it via http://<your-ip>:8765 (service is currently stopped)."
